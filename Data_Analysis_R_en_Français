@@ -1,0 +1,150 @@
+---
+title: "Etude de cas Data Analyst Consommation d'électricité en France 2011 2021"
+author: "Aw Aboubakry fRanceR french Data Analyst"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+# **Analyse de la consommation d'électricité en France de 2011 à 2021** **DOMTOM inclus.** **Familles particuliers ET secteurs Industrie Agriculture Tertiaire.**
+
+*All this work with Data loading reading and wrangling approach is in french my beautiful and native language for my first time as a **Français from Paris Parisien (personne n'est parfait) et fier de l'être**. R is an awesome Programming Language that needs to be known and deserves it in french too, as I am to do this cloudy Friday Dec 2022 in Paris of course my hometown.*
+
+## Introduction
+
+La consommation d'électricité en France selon l'INSEE *est 40% plus **thermosensible***, c'est-à-dire sensible aux variations des températures en hiver, *que dans les autres pays d'Europe*. <https://www.insee.fr/fr/statistiques/3973175>
+
+Cette étude de cas comme Data Analyste est faite d'abord pour apprendre de vos retours et aussi pour montrer ce que je sais faire avec **R** en Français cette fois nettoyer les données et les présenter d'une façon agréable et rigoureuse aussi.
+
+Car très souvent c'est en Anglais dans le cadre de mes études ***Data Analytics certificate proficiency in R Programming, RStudio, Excel, SQL, TABLEAU...***. Là je cherche à choisir mon poste c'est un privilège que je comprends mais le prix est payé par les efforts dans mes études récentes. Je choisirai une entreprise privée ouverte et dynamique en France et en région parisienne évidemment.
+
+Pour cela j'ai choisi le nettoyage d'un jeu de données *bien de chez nous et en plus d'actualité: la consommation nationale d'électricité tous les secteurs d'activité confondus.*
+
+Jeu de Données publiques et gratuites de l'agence ORE <https://opendata.agenceore.fr/explore/dataset/conso-elec-gaz-annuelle-par-secteur-dactivite-agregee-commune/information/> du 4 avril 2022 et modifié le 3 novembre 2022 comportant 501565 lignes et 36 colonnes donc 18 millions 056 milles 340 points à traiter avec **R** qui se prononce '*ARRR*' en Anglais et c'est un *Art*.
+
+**Je ferai cette étude en 4 parties** :
+
+La **première** porte sur la **présentation** détaillée des données et leurs formats ou données dites de catégories variables.
+
+La **seconde** partie qui **traite** des variables présentes dans les 36 colonnes est liée à la **troisième** qui **éclaire** sur les observations des données numériques présentes dans les 501565 lignes.
+
+La **quatrième** **fait parler** le croisement des 36 variables catégories présentes dans les colonnes et 501565 observations présentes dans les lignes .
+
+Pour ainsi découvrir ce qui se cache à chaque fois qu'une des *501565* *lignes* croise une des *36* *colonnes*. Ce qui nous fait ***18 millions 056 milles et 340 points*** de croisement ou données donc de cellules d'information.
+
+**R** nous permet de voir tout cela en posant les questions choisies par nos *demandeurs Intéressés* ou *Stakeholders* en Anglais.
+
+Nous conclurons par la découverte de l'histoire racontée par les données elles-mêmes comme toujours pas l'histoire de l'analyste.
+
+Je rajoute toujours à la fin une commande de la fonction de R appelée ***sessionInfo*** pour afficher le contexte de cette analyse du 29 Décembre 2022 afin de permettre aux personnes de comprendre le cadre technique et logiciel utilisé ce jour on est le Vendredi 30 Décembre 2022 il fait un peu nuageux à Paris et déjà nuit à 17H47.
+
+Les packages de R et leurs library que je vais utiliser sont exposés notamment le package tidyverse : *to tidy* en anglais veut dire ranger, *mettre de l'ordre*.
+
+Par choix je ne vais pas utiliser de pipe %\>% pour mieux détailler mon approche et attendre vos conseils .
+
+Les commandes Packages Library "*downloadés"* et"*uploadés"* sont
+
+install.packages("tidyverse")library(tidyverse)install.packages("funModeling")library(funModeling)install.packages("Hmisc")library(Hmisc)install.packages("DataExplorer")library(DataExplorer)library(readr)install.packages("leaflet")
+
+et la fonction **options()** cruciale pour gérer des millions de lignes :
+
+*options(* et défiler vers avec la touche tab et choisir .Machine\$integer.max) pour travailler facilement avec toutes les 501565 lignes et des millions si besoin ,c'est: **options(max.print = .Machine\$integer.max)**
+
+Le premier carré est offert par mes soins pour vous permettre d'apprendre en manipulant les donnés avec R .
+
+*Le premier carré offert!*
+
+## Partie 1 Découverte des données formats libellés des 36 colonnes.
+
+Mettre toutes les variables en évidence ici en 36 colonnes d'origine (\*même la faute de frappe colonne 7 "Indique**"** au lieu d'"Indice\*\*"\*\* qualité Agriculture"\*) de façon complète détaillée Aussi originale aussi avec DataExplorer et sa fonction plot_str pour une visualisation des données bien avant Analyse .
+
+Commençons d'abord par les noms des colonnes appelés aussi libellés des variables ici en mode wide format moins joli certes mais plus efficace pour traiter des centaines voir plus de colonnes car chaque colonne est numérotée d'avance. Le tri est plus facile pour retenir les colonnes dont on aura besoin.
+
+Puis on charge 18 millions 056 milles 340 les données et choisit un nom plus court et explicite possible .
+
+```{r}
+colnames(conso_Electricite_FR_2011_2021)
+```
+
+En plus joli tout de suite avec la fonction plot_str()
+
+```{r}
+plot_str(conso_Electricite_FR_2011_2021)
+```
+
+Ou avec la fonction glimpse() du package nommé pillar pour plus de détails d'entrée et plus facile pour renommer ou conserver des noms de colonnes ou libellés mais *sans les numéros de colonnes* avec la fonction colnames()
+
+```{r}
+glimpse(conso_Electricite_FR_2011_2021)
+```
+
+Avec la fonction status du package funModeling et c'est sous forme de table data frame sans numéros non plus mais avec les noms des colonnes plus facilement disposés à copier et coller.
+
+```{r}
+status(conso_Electricite_FR_2011_2021)
+```
+
+Avec du classique et efficace par la fonction summary() avec des calculs ou métrics de base en résumé de chaque colonne et son titre facile à préAnalyser et de se faire tout de suite une idée sur chaque colonne le format des données et aussi des **max min moyenne quartile**
+
+```{r}
+summary(conso_Electricite_FR_2011_2021)
+```
+
+## Partie 2 Les données numériques présentes dans les 501565 lignes.
+
+La fonction freq() nous permet de choisir une seule colonne ou variable avec le signe du \$ accolé au nom de la data. Ici pour un résumé du variable Libellé Région ici **var** comme **var**iable et non (non du Var ou le 83 un département du Sud Toulon la plus connue des villes du Var).
+
+La fonction freq() nous donne un résumé détaillé et en image des pourcentages de noms de communes présentes par région ce qui fait arriver la région GrandEst en tête dans cette découverte des données brutes.
+
+```{r}
+freq(conso_Electricite_FR_2011_2021$`Libellé Région`)
+```
+
+## Partie 3 Analyse graphique et quantitative des données numériques.
+
+De façon graphique nous pouvons voir ce à quoi ressemblent les données numériques avec la fonction plot_num() ici cela ne ressort pas trop colonnes certes mais juste pour un aperçu des possibilités avec moins de lignes et moins de colonnes. Si vous pouvez m'indiquer mieux je suis preneur!
+
+```{r}
+plot_num(conso_Electricite_FR_2011_2021)
+```
+
+Et aussi pour profiling_num() pour ne voir que les colonnes à valeur numérique et éviter de calculer "les codes postaux"comme dans excel.
+
+```{r}
+library(funModeling)
+profiling_num(conso_Electricite_FR_2011_2021)
+```
+
+## Partie 4 Analyse croisée et simultanée des 18056340 données en libellé et en numérique.
+
+```{r}
+describe(conso_Electricite_FR_2011_2021)
+```
+
+Attention La fonction la plus jolie n'est pas forcément la plus efficace. La preuve ici:
+
+```{r}
+plot_str(conso_Electricite_FR_2011_2021)
+
+```
+
+## Conclusion
+
+Avant d'analyser l'histoire racontée par le jeu de données il faut présenter les données et prendre leurs "empreintes" comme un commissaire à la Navarro ou Roger Hanin pour les anciens.
+
+Pour les 18 millions 056 milles 340 données sur consommation d'éléctricité dans notre pays du département de l'Ain 01 avec Bourg-en-Bresse 01100 à Mamoudzou 97611 département de Mayotte 97.
+
+Ou pour n'importe quel autre jeu de données la même enquête du Data Analyst dépend de cette prise de contact des empreintes.
+
+Merci de me donner votre avis sur mon enquête en Français cette fois pour montrer que R c'est comme le Français une langue difficile certes mais très belle subtile et pleine de vie. Python c'est l'Anglais à la mode certes mais pas la seule sans chauvinisme juste fRançais.
+
+For people who don't read french this is a free and open data set dealing with **electricity consumption in France from 2011 to 2021.**
+
+I did it all by myself and the help of the wonderful R community.
+
+***Merci from Paris my hometown this cloudy Friday Dec ,30th, 2022.***
+
+```{r}
+sessionInfo()
+```
+
+Merci beaucoup et **Bonne Année 2023** dans 2 jours à toutes et à *to all.*
